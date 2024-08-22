@@ -6,8 +6,8 @@
       </template>
     </el-input>
     <el-table :data="users" style="width: 100%">
-      <el-table-column prop="id" label="用户ID"></el-table-column>
-      <el-table-column prop="userName" label="用户名"></el-table-column>
+      <el-table-column prop="uid" label="用户ID"></el-table-column>
+      <el-table-column prop="name" label="用户名"></el-table-column>
       <el-table-column prop="gender" label="性别"></el-table-column>
       <el-table-column prop="birthday" label="生日"></el-table-column>
       <el-table-column prop="role" label="角色"></el-table-column>
@@ -51,7 +51,7 @@
     <el-pagination
       @current-change="handleCurrentChange"
       :current-page="currentPage"
-      :page-size="10"
+      :page-size="pageSize"
       layout="total, prev, pager, next"
       :total="total"
     >
@@ -75,13 +75,13 @@ export default {
       users: [],
       searchQuery: '',
       currentPage: 1,
+      pageSize: 5,
       total: 0
     }
   },
   methods: {
     handleAddUser() {
       this.dialogVisible = true
-      console.log(this.dialogVisible)
       this.newUser = {
         // 重置表单数据
         userName: '',
@@ -95,7 +95,7 @@ export default {
     },
     async submitNewUser() {
       try {
-        await axios.post('/api/users', this.newUser)
+        await axios.post('http://localhost:8080/api/users/add', this.newUser)
         this.$message.success('用户添加成功')
         this.dialogVisible = false
         this.fetchUsers() // 刷新用户列表
@@ -106,6 +106,18 @@ export default {
     },
     async fetchUsers() {
       // 调用API获取用户列表
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/users/fetch?page=${this.currentPage}&page_size=${this.pageSize}`
+        )
+        this.$message.success('用户信息拉取成功')
+        this.users = response.data.data.users
+        this.total = response.data.data.total
+        console.log(response)
+      } catch (error) {
+        this.$message.error('拉取用户信息失败')
+        console.error(error)
+      }
     },
     searchUsers() {
       // 根据searchQuery搜索用户
