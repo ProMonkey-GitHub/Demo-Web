@@ -14,7 +14,7 @@
       <el-table-column label="操作">
         <template #default="{ row }">
           <el-button type="primary" size="small" @click="handleEdit(row)">编辑</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(row.id)">删除</el-button>
+          <el-button type="danger" size="small" @click="handleDelete(row.uid)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -28,8 +28,8 @@
         </el-form-item>
         <el-form-item label="性别">
           <el-select v-model="newUser.gender" placeholder="请选择">
-            <el-option label="男" value="male"></el-option>
-            <el-option label="女" value="female"></el-option>
+            <el-option label="男" value="男"></el-option>
+            <el-option label="女" value="女"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="生日">
@@ -110,23 +110,45 @@ export default {
         const response = await axios.get(
           `http://localhost:8080/api/users/fetch?page=${this.currentPage}&page_size=${this.pageSize}`
         )
-        this.$message.success('用户信息拉取成功')
+        this.$message.success('用户信息获取成功')
         this.users = response.data.data.users
         this.total = response.data.data.total
         console.log(response)
       } catch (error) {
-        this.$message.error('拉取用户信息失败')
+        this.$message.error('获取用户信息失败')
         console.error(error)
       }
     },
-    searchUsers() {
+    async searchUsers() {
       // 根据searchQuery搜索用户
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/users/search?page=${this.currentPage}&page_size=${this.pageSize}&keyword=${this.searchQuery}`
+        )
+        this.$message.success('用户信息获取成功')
+        this.users = response.data.data.users
+        this.total = response.data.data.total
+        console.log(response)
+      } catch (error) {
+        this.$message.error('获取用户信息失败')
+        console.error(error)
+      }
     },
     handleEdit(user) {
       // 打开编辑用户表单
     },
     async handleDelete(userId) {
       // 调用API删除用户
+      try {
+        await axios.post(
+          `http://localhost:8080/api/users/delete?id=${userId}`
+        )
+        this.fetchUsers() // 刷新用户列表
+        this.$message.success('用户信息删除成功')
+      } catch (error) {
+        this.$message.error('删除用户信息失败')
+        console.error(error)
+      }
     },
     handleCurrentChange(val) {
       this.currentPage = val
