@@ -102,12 +102,10 @@
 
 <script>
 import axios from 'axios'
-import { Search } from '@element-plus/icons-vue'
 
 export default {
   data() {
     return {
-      Search,
       dialogVisible: false,
       editDialogVisible: false,
       newUser: {
