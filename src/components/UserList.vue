@@ -220,7 +220,11 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.fetchUsers()
+      if (this.searchQuery != '') {
+        this.searchUsers()
+      } else {
+        this.fetchUsers()
+      }
     }
   },
   created() {
